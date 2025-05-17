@@ -1,0 +1,9 @@
+curl -X POST https://modl-relayer-production.up.railway.app/relay \
+  -H "Content-Type: application/json" \
+  -d '{
+    "paymaster":"0xf4782DcfFEE16013bFc0337901167c9D44C687fA", 
+    "target": "0xBC7e41034c028724de34C7AeE97De6758fae8761",
+    "encodedData":"0x09fcd88600000000000000000000000000000000000000000000000000000000000000205465737450726f6a656374", 
+    "gasLimit": 200000,
+    "user": "0x52F7B438B3C72d9a834FE7CBc00D78E948d706D5"
+  }'
