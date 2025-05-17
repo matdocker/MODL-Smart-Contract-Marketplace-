@@ -18,6 +18,20 @@ MODULR is a decentralized, modular smart contract marketplace that enables devel
 
 ## Core Smart Contracts
 
+* **MODLToken**: ERC-20 token used for access control and fee payments across the MODULR ecosystem.
+* **TierSystem**: Staking-based contract that assigns users to discount tiers based on rolling MODL balances.
+* **TemplateRegistry**: Stores metadata and IPFS URIs for registered and verified templates.
+* **FeeManager**: Handles MODL token fee calculation, discount application, and routing to treasury, founders, and burn.
+* **TemplateFactory**: Deploys smart contract templates into user projects.
+* **DeploymentManager**: Manages the project lifecycle (create, deploy, delete) and ensures meta-tx compatibility.
+* **AuditRegistry**: Optional module for marking templates as audited, verified, or deprecated.
+* **MODLPaymaster**: Holds ETH and handles gas payments on behalf of users while charging MODL tokens.
+* **StakeManager**: Governs staking operations and validator trust for the MODLRelayHub or governance use cases.
+* **MinimalForwarder**: ERC-2771-compatible contract to forward user-signed meta-transactions.
+* **MODLRelayHub**: Core entry point for executing meta-transactions via trusted relayers and Paymaster logic.
+
+---
+
 ### 1. DeploymentManager
 
 * **Purpose**: Orchestrates project lifecycle, including template deployment.

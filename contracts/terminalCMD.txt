@@ -1,0 +1,20 @@
+
+npx hardhat console --network base
+
+npx hardhat verify --network base 0x741673CBa8a16A269b1eF07Cb3F601ef6e2d5cbB
+
+npx hardhat compile
+
+npx hardhat run scripts/deploy.js --network base
+
+npx hardhat verify --network base 0x06575CC82c1c86A5da41F14178777c97b7a005EF 0xAbCdEf0123456789abcdef0123456789ABcDef01
+
+
+///  Run Testing   ///
+npx hardhat test
+
+
+
+Storage gap
+
+uint256[50] private __gap;

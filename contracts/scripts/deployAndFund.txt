@@ -1,0 +1,154 @@
+Awesome! Let's get you that **one big deploy-and-fund script** that will take care of everything.
+
+---
+
+Here is the **complete script** for your project:
+
+# 📂 `scripts/deployAndFund.js`
+
+```javascript
+const { ethers, upgrades } = require("hardhat");
+const { parseEther } = require("ethers/lib/utils");
+
+async function main() {
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
+
+  // 1. Deploy MODLToken
+  const MODLToken = await ethers.getContractFactory("MODLToken");
+  const modlToken = await MODLToken.deploy();
+  console.log("MODLToken deployed at:", modlToken.address);
+
+  // 2. Deploy TierSystem
+  const TierSystem = await ethers.getContractFactory("TierSystem");
+  const tierSystem = await TierSystem.deploy();
+  console.log("TierSystem deployed at:", tierSystem.address);
+
+  // 3. Deploy FeeManager
+  const FeeManager = await ethers.getContractFactory("FeeManager");
+  const feeManager = await FeeManager.deploy();
+  console.log("FeeManager deployed at:", feeManager.address);
+
+  // 4. Deploy TemplateRegistry
+  const TemplateRegistry = await ethers.getContractFactory("TemplateRegistry");
+  const templateRegistry = await TemplateRegistry.deploy();
+  console.log("TemplateRegistry deployed at:", templateRegistry.address);
+
+  // 5. Deploy TemplateFactory
+  const TemplateFactory = await ethers.getContractFactory("TemplateFactory");
+  const templateFactory = await TemplateFactory.deploy();
+  console.log("TemplateFactory deployed at:", templateFactory.address);
+
+  // 6. Deploy MODLPaymaster
+  const MODLPaymaster = await ethers.getContractFactory("MODLPaymaster");
+  const modlPaymaster = await MODLPaymaster.deploy();
+  console.log("MODLPaymaster deployed at:", modlPaymaster.address);
+
+  // 7. Deploy RelayHub and Forwarder (full OpenGSN setup)
+  const RelayHub = await ethers.getContractFactory("RelayHub");
+  const relayHub = await RelayHub.deploy(deployer.address);
+  console.log("RelayHub deployed at:", relayHub.address);
+
+  const Forwarder = await ethers.getContractFactory("Forwarder");
+  const forwarder = await Forwarder.deploy();
+  console.log("Forwarder deployed at:", forwarder.address);
+
+  // 8. Deploy StakeManager
+  const StakeManager = await ethers.getContractFactory("StakeManager");
+  const stakeManager = await StakeManager.deploy();
+  console.log("StakeManager deployed at:", stakeManager.address);
+
+  // 9. Deploy Penalizer
+  const Penalizer = await ethers.getContractFactory("Penalizer");
+  const penalizer = await Penalizer.deploy();
+  console.log("Penalizer deployed at:", penalizer.address);
+
+  // 10. Set the TierSystem for MODLPaymaster (if needed)
+  await modlPaymaster.setTierSystem(tierSystem.address);
+  console.log("Set TierSystem in MODLPaymaster");
+
+  // 11. Fund Paymaster with 0.5 ETH for gasless transactions
+  const fundTx = await deployer.sendTransaction({
+    to: modlPaymaster.address,
+    value: parseEther("0.5") // Send 0.5 ETH to fund the Paymaster
+  });
+  await fundTx.wait();
+  console.log("Funded Paymaster with 0.5 ETH");
+
+  // 12. Mint MODL tokens to test user
+  const testUser = "0xAddressHere"; // Replace with your test user's address
+  await modlToken.mint(testUser, parseEther("1000"));
+  console.log("Minted 1000 MODL tokens to test user");
+
+  // 13. Approve MODL tokens for Paymaster deposit
+  await modlToken.connect(deployer).approve(modlPaymaster.address, parseEther("1000"));
+  console.log("Approved 1000 MODL tokens for deposit");
+
+  // 14. Deposit MODL tokens into Paymaster for the test user
+  await modlPaymaster.connect(deployer).depositFor(testUser, parseEther("1000"));
+  console.log("Deposited 1000 MODL tokens into Paymaster");
+
+  // 15. Set Tiers for user (for example, Tier 3)
+  await tierSystem.setTier(testUser, 3);
+  console.log("Set Tier 3 for test user");
+
+  // 16. Save contract addresses to .env.local for frontend use
+  const fs = require("fs");
+  const envFile = `
+    MODLTokenAddress=${modlToken.address}
+    TierSystemAddress=${tierSystem.address}
+    FeeManagerAddress=${feeManager.address}
+    TemplateRegistryAddress=${templateRegistry.address}
+    TemplateFactoryAddress=${templateFactory.address}
+    MODLPaymasterAddress=${modlPaymaster.address}
+    RelayHubAddress=${relayHub.address}
+    ForwarderAddress=${forwarder.address}
+    StakeManagerAddress=${stakeManager.address}
+    PenalizerAddress=${penalizer.address}
+  `;
+  fs.writeFileSync(".env.local", envFile);
+  console.log("Saved contract addresses to .env.local");
+
+  console.log("🛠 All contracts deployed and funded! Ready for testing!");
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
+---
+
+# 📋 How This Script Works:
+
+1. **Deploys all contracts**: 
+   - **MODLToken**, **TierSystem**, **FeeManager**, **TemplateRegistry**, **TemplateFactory**, **MODLPaymaster**, **RelayHub**, **Forwarder**, **StakeManager**, **Penalizer**.
+2. **Funds Paymaster** with 0.5 ETH for gasless transactions (via GSN).
+3. **Mints 1000 MODL tokens** to the test user and **deposits them into MODLPaymaster** for gasless interactions.
+4. **Sets Tier** for the test user to enable discounts or gasless deployment.
+5. **Saves all contract addresses** to a `.env.local` file, which you can use to connect your frontend to the deployed contracts easily.
+
+---
+
+# 🔧 How to Run It
+
+1. Save the script to `scripts/deployAndFund.js`.
+2. Run the script with this command:
+
+```bash
+npx hardhat run scripts/deployAndFund.js --network base
+```
+
+---
+
+# 🚀 What You Gain:
+- One-click **deploy, fund, and setup** for testing.
+- **Fully automated** environment setup for frontend MVP and testing.
+- No more manual steps for deploying and funding — it's all done!
+
+---
+
+Let me know how this goes, and feel free to ask if you need additional adjustments or further automation for your project!
